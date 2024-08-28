@@ -5,22 +5,25 @@ public class ArrayDeque<T> {
     T items[];
     int first;
     int last;
-    ArrayDeque(){
-        int size=0;
+    public ArrayDeque(){
+        size=0;
         items=(T[]) new Object [8];
-        int first=items.length;
-        int last=0;
+        first=items.length-1;
+        last=0;
     }
     private void resize(int capacity) {
          T[] a = (T[]) new Object[capacity];
-        for (int i = 0,j=0; i < size; i += 1,j++) {
-            if(j+first<size)
+        for (int i = 0,j=1; i <size; i += 1,j++) {
+            if(j+first<items.length)
                 a[i] = items[j+first];
             else
                 a[i]=items[j+first-size];
         }
-        first = 0;
-        last = items.length-1;
+        first = a.length-1;
+        if(a.length>items.length)
+            last = items.length;
+        else
+            last = a.length-1;
         items = a;
 
     }
@@ -37,7 +40,8 @@ public class ArrayDeque<T> {
             resize(this.size*2);
         }
         items[last]=item;
-        last=last== items.length-1?0:last-1;
+        size++;
+        last=last== items.length-1?0:last+1;
     }
     public boolean isEmpty(){
         if(size==0)
@@ -49,12 +53,12 @@ public class ArrayDeque<T> {
         return this.size;
     }
     public void printDeque(){
-        for(int j=0;j<size;j++)
+        for(int j=1;j<=size;j++)
         {
-            if(j+first<size)
+            if(j+first<items.length)
                 System.out.println(items[j+first]);
             else
-                System.out.println(items[j+first-size]);
+                System.out.println(items[j+first- items.length]);
         }
     }
     public T removeLast(){
@@ -65,18 +69,21 @@ public class ArrayDeque<T> {
         }
         int Remove=last==0?items.length-1:last-1;
         T value = items[Remove];
+        size--;
         items[Remove]=null;
         return value;
     }
     public T removeFirst(){
         if(size==0)
             return null;
-        if ((size < items.length / 4) && (size > 4)) {
+        if ((size < items.length / 4) && (items.length > 8)) {
             resize(items.length / 4);
         }
         int Remove=first==items.length-1?0:first+1;
         T value = items[Remove];
+        size--;
         items[Remove]=null;
+        first=Remove;
         return value;
     }
     public T get(int index)
