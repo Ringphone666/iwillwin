@@ -1,6 +1,6 @@
 package deque;
 
-public class ArrayDeque<T> {
+public class ArrayDeque <T>implements Deque<T> {
     int size;
     T items[];
     int first;
@@ -43,6 +43,7 @@ public class ArrayDeque<T> {
         size++;
         last=last== items.length-1?0:last+1;
     }
+    @Override
     public boolean isEmpty(){
         if(size==0)
             return true;

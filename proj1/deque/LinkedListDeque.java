@@ -1,6 +1,6 @@
 package deque;
 
-public class LinkedListDeque<T> {
+public class LinkedListDeque<T> implements Deque<T> {
     class Dlist<T>{
         T value;
         Dlist<T> next;
@@ -63,6 +63,7 @@ public class LinkedListDeque<T> {
     public int size(){
         return this.size;
     }
+    @Override
     public boolean isEmpty(){
         if(this.size==0)
             return true;
