@@ -27,11 +27,10 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
 
     /* Instance Variables */
     private Collection<Node>[] buckets;
-    static int default_size = 16;
-    static double default_factor = 0.75;
+   private static int default_size = 16;
+   private static double default_factor = 0.75;
     private final double maxLoadFactor;
-    public int size ;
-    public Set set;
+   private int size ;
 
     // You should probably define some more!
 
