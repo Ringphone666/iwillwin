@@ -65,6 +65,9 @@ public class CapersRepository {
      */
     public static void makeDog(String name, String breed, int age) {
         // TODO
+        Dog newDog = new Dog(name, breed, age);
+        newDog.saveDog();
+        System.out.println(newDog);
     }
 
     /**
@@ -75,5 +78,8 @@ public class CapersRepository {
      */
     public static void celebrateBirthday(String name) {
         // TODO
+        Dog theDog = Dog.fromFile(name);
+        theDog.haveBirthday();
+        theDog.saveDog();
     }
 }

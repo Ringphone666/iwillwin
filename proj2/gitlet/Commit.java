@@ -2,7 +2,18 @@ package gitlet;
 
 // TODO: any imports you need here
 
-import java.util.Date; // TODO: You'll likely use this in this class
+import java.io.File;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.*;
+import java.text.SimpleDateFormat;
+import java.text.DateFormat;
+
+import static gitlet.Repository.*;
+import static gitlet.Utils.*;
+
+
+// TODO: You'll likely use this in this class
 
 /** Represents a gitlet commit object.
  *  TODO: It's a good idea to give a description here of what else this Class
@@ -10,7 +21,7 @@ import java.util.Date; // TODO: You'll likely use this in this class
  *
  *  @author TODO
  */
-public class Commit {
+public class Commit implements Serializable {
     /**
      * TODO: add instance variables here.
      *
@@ -21,6 +32,45 @@ public class Commit {
 
     /** The message of this Commit. */
     private String message;
+    private String itshashcode;
+    private Date date;
+
+    private String parenthashcode;
+
+    public Commit(String message,String parenthashcode){
+        this.message = message;
+        this.parenthashcode = parenthashcode;
+        if (parenthashcode==null){
+            date = new Date(0);
+        }
+        else{
+            date = new Date();
+        }
+        getItshashcode();
+    }
+
+    public void getItshashcode(){
+        this.itshashcode=sha1(message,date,parenthashcode);
+    }
+
+    public String getTimestamp() {
+        // Thu Jan 1 00:00:00 1970 +0000
+        DateFormat dateFormat = new SimpleDateFormat("EEE MMM d HH:mm:ss yyyy Z", Locale.ENGLISH);
+        return dateFormat.format(date);
+    }
+
+    public String getMessage(){
+        return message;
+    }
+
+    public String getParenthashcode(){
+        return parenthashcode;
+    }
+
+    public void savefile(){
+        File commit = join (getCommitDir(),itshashcode);
+        writeObject(commit,this);
+    }
 
     /* TODO: fill in the rest of this class. */
 }
