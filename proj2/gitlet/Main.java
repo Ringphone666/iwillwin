@@ -11,8 +11,10 @@ public class Main {
     public static void main(String[] args) {
         // TODO: what if args is empty?
         String firstArg = args[0];
+
         switch(firstArg) {
             case "init":
+                Repository.init();
                 // TODO: handle the `init` command
                 break;
             case "add":

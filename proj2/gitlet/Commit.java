@@ -50,7 +50,7 @@ public class Commit implements Serializable {
     }
 
     public void getItshashcode(){
-        this.itshashcode=sha1(message,date,parenthashcode);
+        this.itshashcode=sha1(message,date.toInstant(),parenthashcode);
     }
 
     public String getTimestamp() {
