@@ -35,23 +35,24 @@ public class Commit implements Serializable {
     private String message;
     private String itshashcode;
     private Date date;
+    private List<String> parenthashcode;
 
-    private String parenthashcode;
-
-    public Commit(String message,String parenthashcode){
+    public Commit(){
+        this.message = "have initcommit";
+        date = new Date(0);
+        parenthashcode = new ArrayList<>();
+        itshashcode = getItshashcode();
+    }
+    public Commit(String message,Commit parent){
         this.message = message;
-        this.parenthashcode = parenthashcode;
-        if (parenthashcode==null){
-            date = new Date(0);
-        }
-        else{
-            date = new Date();
-        }
+        parenthashcode = new ArrayList<>();
+        parenthashcode.add(parent.getItshashcode());
+        date = new Date();
         getItshashcode();
     }
 
     public String getItshashcode(){
-        this.itshashcode=sha1(message,date.toInstant(),parenthashcode);
+        this.itshashcode=sha1(message,date.toString(),parenthashcode.toString());
         return itshashcode;
     }
 
@@ -66,7 +67,7 @@ public class Commit implements Serializable {
     }
 
     public String getParenthashcode(){
-        return parenthashcode;
+        return parenthashcode.getFirst();
     }
 
     public void savefile(){

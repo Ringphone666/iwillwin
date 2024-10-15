@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import static gitlet.Utils.*;
+
 import static java.lang.System.exit;
 
 // TODO: any imports you need here
@@ -51,8 +52,9 @@ public class Repository {
     private static File COMMIT_DIR = join(OBJECT_DIR, "commits");
     private static File BLOB_DIR = join(OBJECT_DIR, "blobs");
     private static File HEAD_DIR = join (GITLET_DIR,"HEAD");
-    private static File BRANCH_DIR = join (GITLET_DIR,"branch");
+    private static File BRANCH_DIR = join (GITLET_DIR,"branches");
     private static File STAGE_DIR = join (GITLET_DIR,"stage");
+    private static File NOWBRANCH_DIR = join(GITLET_DIR,"BRANCH");
     private static Commit currentcommit;
     /* TODO: fill in the rest of this class. */
 
@@ -82,16 +84,18 @@ public class Repository {
         OBJECT_DIR.mkdir();
         COMMIT_DIR.mkdir();
         BLOB_DIR.mkdir();
-        HEAD_DIR.mkdir();
-        BRANCH_DIR.mkdir();
         STAGE_DIR.mkdir();
-
-        Commit initcommit = new Commit("have initcommit ","");
+        BRANCH_DIR.mkdir();
+        Commit initcommit = new Commit();
         initcommit.savefile();
         currentcommit = initcommit;
         createnewFile(HEAD_DIR);
         writeContents(HEAD_DIR,currentcommit.getItshashcode());
-
+        initMaster();
+//        Branch master = new Branch(currentcommit);
+//        master.savefile();
+//        createnewFile(BRANCH_DIR);
+//        writeContents(BRANCH_DIR, "master");
 
     }
 
@@ -103,5 +107,11 @@ public class Repository {
                 throw new RuntimeException(e);
             }
         }
+    }
+    private static void initMaster() {
+        Branch master = new Branch(currentcommit);
+        master.savefile();
+        createnewFile(NOWBRANCH_DIR);
+        writeContents(NOWBRANCH_DIR, "master");
     }
 }
