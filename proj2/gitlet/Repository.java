@@ -1,6 +1,8 @@
 package gitlet;
 
 import java.io.File;
+import java.io.IOException;
+
 import static gitlet.Utils.*;
 import static java.lang.System.exit;
 
@@ -48,10 +50,27 @@ public class Repository {
     private static File OBJECT_DIR = join(GITLET_DIR, "objects");
     private static File COMMIT_DIR = join(OBJECT_DIR, "commits");
     private static File BLOB_DIR = join(OBJECT_DIR, "blobs");
+    private static File HEAD_DIR = join (GITLET_DIR,"HEAD");
+    private static File BRANCH_DIR = join (GITLET_DIR,"branch");
+    private static File STAGE_DIR = join (GITLET_DIR,"stage");
+    private static Commit currentcommit;
     /* TODO: fill in the rest of this class. */
 
     public static File getCommitDir(){
         return COMMIT_DIR;
+    }
+    public static File getBranchDir(){return BRANCH_DIR;}
+
+    public static File getBlobDir() {
+        return BLOB_DIR;
+    }
+
+    public static File getObjectDir() {
+        return OBJECT_DIR;
+    }
+
+    public static File getHeadDir(){
+        return HEAD_DIR;
     }
 
     public static void init(){
@@ -62,7 +81,27 @@ public class Repository {
         GITLET_DIR.mkdir();
         OBJECT_DIR.mkdir();
         COMMIT_DIR.mkdir();
+        BLOB_DIR.mkdir();
+        HEAD_DIR.mkdir();
+        BRANCH_DIR.mkdir();
+        STAGE_DIR.mkdir();
+
         Commit initcommit = new Commit("have initcommit ","");
         initcommit.savefile();
+        currentcommit = initcommit;
+        createnewFile(HEAD_DIR);
+        writeContents(HEAD_DIR,currentcommit.getItshashcode());
+
+
+    }
+
+    static void createnewFile(File file){
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }

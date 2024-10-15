@@ -1,4 +1,4 @@
-package game2048;
+ spackage game2048;
 
 import java.io.File;
 import java.io.FileWriter;

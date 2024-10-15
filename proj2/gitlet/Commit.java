@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.text.DateFormat;
 
 import static gitlet.Repository.*;
+import static gitlet.Repository.createnewFile;
 import static gitlet.Utils.*;
 
 
@@ -49,8 +50,9 @@ public class Commit implements Serializable {
         getItshashcode();
     }
 
-    public void getItshashcode(){
+    public String getItshashcode(){
         this.itshashcode=sha1(message,date.toInstant(),parenthashcode);
+        return itshashcode;
     }
 
     public String getTimestamp() {
@@ -69,6 +71,7 @@ public class Commit implements Serializable {
 
     public void savefile(){
         File commit = join (getCommitDir(),itshashcode);
+        createnewFile(commit);
         writeObject(commit,this);
     }
 
