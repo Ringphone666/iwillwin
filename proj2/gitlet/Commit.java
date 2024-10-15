@@ -67,7 +67,7 @@ public class Commit implements Serializable {
     }
 
     public String getParenthashcode(){
-        return parenthashcode.getFirst();
+        return parenthashcode.get(0);
     }
 
     public void savefile(){
