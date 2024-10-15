@@ -1,8 +1,12 @@
 package gitlet;
 
-public class Blob {
+import java.io.File;
+import java.io.Serializable;
+import static gitlet.Utils.*;
+import static gitlet.Repository.*;
+public class Blob implements Serializable {
     private String refs;//存储相对路径
-
+    private String itshashcode;
     private byte[] content;//内容
 
     public String getRefs(){
@@ -13,4 +17,20 @@ public class Blob {
         return content;
     }
 
+    public Blob(File file){
+        refs = file.getPath();;
+        content = readContents(file);
+        getItshashcode();
+    }
+
+    public String  getItshashcode() {
+        this.itshashcode = sha1(refs.toString(),content.toString());
+        return itshashcode;
+    }
+
+    public void savefile(){
+        File blob = join(getBlobDir(),itshashcode);
+        createnewFile(blob);
+        writeObject(blob,this);
+    }
 }

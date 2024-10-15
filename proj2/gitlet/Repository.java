@@ -75,6 +75,10 @@ public class Repository {
         return HEAD_DIR;
     }
 
+    public static File getStageDir(){
+        return STAGE_DIR;
+    }
+
     public static void init(){
         if(GITLET_DIR.exists()){
             System.out.println("A Gitlet version-control system already exists in the current directory.");
@@ -92,6 +96,7 @@ public class Repository {
         createnewFile(HEAD_DIR);
         writeContents(HEAD_DIR,currentcommit.getItshashcode());
         initMaster();
+        initstage();
 //        Branch master = new Branch(currentcommit);
 //        master.savefile();
 //        createnewFile(BRANCH_DIR);
@@ -99,6 +104,11 @@ public class Repository {
 
     }
 
+    private static void initstage(){
+        Stage addstage = new Stage("addstage");
+        addstage.savefile();
+
+    }
     static void createnewFile(File file){
         if (!file.exists()) {
             try {
@@ -113,5 +123,33 @@ public class Repository {
         master.savefile();
         createnewFile(NOWBRANCH_DIR);
         writeContents(NOWBRANCH_DIR, "master");
+    }
+
+    public static void add(String filename){
+        File newfile = join(CWD,filename);
+        judgefileexist(newfile);
+        Blob newblow = new Blob(newfile);
+        Stage addstage = readObject(STAGE_DIR, Stage.class);
+        if (judgeadd(addstage,newblow)){  //如果名字和hashcode都一样则存入
+            addstage.getHashmap().put(newblow.getRefs(), newblow.getItshashcode());
+        }
+        addstage.savefile();
+    }
+    //判断这个文件是否已经存在是否要加入
+    public static boolean judgeadd(Stage stage,Blob blob){
+        if(!(stage.getHashmap().containsValue(blob.getItshashcode())&&stage.getHashmap().containsKey(blob.getRefs()))){
+            return true;
+        }
+        else
+            return false;
+    }
+    public static void judgefileexist(File file){
+        if(file.exists()){
+            return;
+        }
+        else{
+            System.out.println("File does not exist.");
+            System.exit(0);
+        }
     }
 }
