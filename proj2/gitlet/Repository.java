@@ -130,6 +130,7 @@ public class Repository {
         File newfile = join(CWD,filename);
         judgefileexist(newfile); //判断这个文件是否存在
         Blob newblow = new Blob(newfile);
+        newblow.savefile();
         Stage addstage = Readaddstage();
         if (judgeadd(addstage,newblow)){  //如果名字和hashcode都一样则存入
             addstage.getHashmap().put(newblow.getRefs(), newblow.getItshashcode());
