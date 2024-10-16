@@ -118,6 +118,7 @@ public class Repository {
             }
         }
     }
+
     private static void initMaster() {
         Branch master = new Branch(currentcommit);
         master.savefile();
@@ -127,13 +128,18 @@ public class Repository {
 
     public static void add(String filename){
         File newfile = join(CWD,filename);
-        judgefileexist(newfile);
+        judgefileexist(newfile); //判断这个文件是否存在
         Blob newblow = new Blob(newfile);
-        Stage addstage = readObject(STAGE_DIR, Stage.class);
+        Stage addstage = Readaddstage();
         if (judgeadd(addstage,newblow)){  //如果名字和hashcode都一样则存入
             addstage.getHashmap().put(newblow.getRefs(), newblow.getItshashcode());
         }
         addstage.savefile();
+    }
+
+    public static Stage Readaddstage (){
+        File addstage =join(STAGE_DIR,"addstage");
+        return readObject(addstage, Stage.class);
     }
     //判断这个文件是否已经存在是否要加入
     public static boolean judgeadd(Stage stage,Blob blob){
