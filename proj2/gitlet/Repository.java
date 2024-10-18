@@ -93,8 +93,7 @@ public class Repository {
         Commit initcommit = new Commit();
         initcommit.savefile();
         currentcommit = initcommit;
-        createnewFile(HEAD_DIR);
-        writeContents(HEAD_DIR,currentcommit.getItshashcode());
+        SetHEAD();
         initMaster();
         initstage();
 //        Branch master = new Branch(currentcommit);
@@ -103,10 +102,16 @@ public class Repository {
 //        writeContents(BRANCH_DIR, "master");
 
     }
+    public static void SetHEAD(){
+        createnewFile(HEAD_DIR);
+        writeContents(HEAD_DIR,currentcommit.getItshashcode());
+    }
 
     private static void initstage(){
         Stage addstage = new Stage("addstage");
+        Stage removestage = new Stage("removestage");
         addstage.savefile();
+        removestage.savefile();
 
     }
     static void createnewFile(File file){
@@ -137,10 +142,65 @@ public class Repository {
         }
         addstage.savefile();
     }
+    public static void commit (String message){
+        judgestage();
+        judgemessage(message);
+        Commit a_newcommit = new Commit(message,ReadHead());
+        addblob_to_commit(a_newcommit);
+        //差一个remove文件的
+        a_newcommit.savefile();
+        currentcommit = a_newcommit;
+        SetHEAD();
+        //设置分支？？暂定;
+        clearstage();
+    }
+    public static Commit ReadHead(){
+            File headCommit = join(COMMIT_DIR, readContentsAsString(HEAD_DIR));
+            return readObject(headCommit, Commit.class);
+    }
+    public static void clearstage(){
+        Readremovestage().getHashmap().clear();
+        Readremovestage().savefile();
+        Readaddstage().getHashmap().clear();
+        Readaddstage().savefile();
+    }
+    public static void addblob_to_commit (Commit commit){
+        commit.getblobhashmap().putAll(Readaddstage().getHashmap());
+    }
+    public static void judgestage(){
+        if(Readaddstage().getHashmap().isEmpty()&&Readremovestage().getHashmap().isEmpty()){
+            System.out.println("No changes added to the commit.");
+            exit(0);
+        }
+    }
+    public static void judgemessage(String message){
+        if (message.isEmpty()){
+            System.out.println("Please enter a commit message.");
+            exit(0);
+        }
+    }
+    public static void remove(String filename) {
+        File newfile = join(CWD,filename);
+        judgefileexist(newfile);
+        if(Readaddstage().getHashmap().containsKey(newfile.getPath())){
+            remove_addstage_file(Readaddstage(),newfile);
+        }
+        else{
 
-    public static Stage Readaddstage (){
+        }
+    }
+    public static void remove_addstage_file(Stage addstage,File file){
+        addstage.getHashmap().remove(file.getName());
+        addstage.savefile();
+    }
+
+        public static Stage Readaddstage (){
         File addstage =join(STAGE_DIR,"addstage");
         return readObject(addstage, Stage.class);
+    }
+    public static Stage Readremovestage (){
+        File removestage =join(STAGE_DIR,"removestage");
+        return readObject(removestage, Stage.class);
     }
     //判断这个文件是否已经存在是否要加入
     public static boolean judgeadd(Stage stage,Blob blob){

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import static gitlet.Utils.join;
 import static gitlet.Repository.*;
@@ -14,7 +15,7 @@ public class Stage implements Serializable {
     private String stagename;
 
     public Stage (String name){
-        hashmap = new HashMap<>();
+        hashmap = new TreeMap<>();
         stagename = name;
     }
 

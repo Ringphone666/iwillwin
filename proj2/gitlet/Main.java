@@ -22,6 +22,11 @@ public class Main {
                 // TODO: handle the `add [filename]` command
                 break;
             // TODO: FILL THE REST IN
+            case "rm":
+                //
+                break;
+            case "commit":
+                Repository.commit(args[1]);
         }
     }
 }

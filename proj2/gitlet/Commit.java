@@ -36,23 +36,28 @@ public class Commit implements Serializable {
     private String itshashcode;
     private Date date;
     private List<String> parenthashcode;
+    private Map <String,String> blobhashmap;
 
     public Commit(){
         this.message = "have initcommit";
         date = new Date(0);
         parenthashcode = new ArrayList<>();
+        blobhashmap = new TreeMap<>();
         itshashcode = getItshashcode();
     }
     public Commit(String message,Commit parent){
         this.message = message;
+        date = new Date();
         parenthashcode = new ArrayList<>();
         parenthashcode.add(parent.getItshashcode());
-        date = new Date();
-        getItshashcode();
+        blobhashmap = new TreeMap<>(parent.getblobhashmap());
+        itshashcode= getItshashcode();
+                                           //拿到他爹的文件   那么后面commit时候利用addstage进行替换将具有相同
+                                          //文件名的文件替换掉。 Blob文件虽然不在addstage中，但是可以通过map得到名称和路径
     }
 
     public String getItshashcode(){
-        this.itshashcode=sha1(message,date.toString(),parenthashcode.toString());
+        this.itshashcode=sha1(message,date.toString(),parenthashcode.toString(),blobhashmap.toString());
         return itshashcode;
     }
 
@@ -74,6 +79,10 @@ public class Commit implements Serializable {
         File commit = join (getCommitDir(),itshashcode);
         createnewFile(commit);
         writeObject(commit,this);
+    }
+
+    public Map<String, String> getblobhashmap(){
+        return blobhashmap;
     }
 
     /* TODO: fill in the rest of this class. */
