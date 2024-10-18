@@ -21,7 +21,14 @@ public class Stage implements Serializable {
 
     public void addBlob(Blob blob){
         hashmap.put(blob.getRefs(), blob.getItshashcode());
+        savefile();
     }
+
+    public void removeblob(Blob blob){
+        hashmap.remove(blob.getRefs(),blob.getItshashcode());
+        savefile();
+    }
+
 
     public void savefile(){
         File stage = join(getStageDir(),stagename);

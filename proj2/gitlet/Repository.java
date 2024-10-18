@@ -135,19 +135,23 @@ public class Repository {
         File newfile = join(CWD,filename);
         judgefileexist(newfile); //判断这个文件是否存在
         Blob newblow = new Blob(newfile);
-        newblow.savefile();
         Stage addstage = Readaddstage();
-        if (judgeadd(addstage,newblow)){  //如果名字和hashcode都一样则存入
-            addstage.getHashmap().put(newblow.getRefs(), newblow.getItshashcode());
+        if (Readremovestage().getHashmap().containsKey(newblow.getRefs())){
+            Readremovestage().removeblob(newblow);
         }
-        addstage.savefile();
+        else if (judgeadd(addstage,newblow)) {
+            newblow.savefile();
+            addstage.addBlob(newblow);
+        }
+
+
     }
     public static void commit (String message){
         judgestage();
         judgemessage(message);
         Commit a_newcommit = new Commit(message,ReadHead());
         addblob_to_commit(a_newcommit);
-        //差一个remove文件的
+        removeblob_to_commit(a_newcommit);//暂未debug
         a_newcommit.savefile();
         currentcommit = a_newcommit;
         SetHEAD();
@@ -164,9 +168,15 @@ public class Repository {
         Readaddstage().getHashmap().clear();
         Readaddstage().savefile();
     }
+
     public static void addblob_to_commit (Commit commit){
         commit.getblobhashmap().putAll(Readaddstage().getHashmap());
     }
+
+    public static void removeblob_to_commit (Commit commit){
+        commit.getblobhashmap().entrySet().removeAll(Readremovestage().getHashmap().keySet());
+    }
+
     public static void judgestage(){
         if(Readaddstage().getHashmap().isEmpty()&&Readremovestage().getHashmap().isEmpty()){
             System.out.println("No changes added to the commit.");
@@ -179,18 +189,31 @@ public class Repository {
             exit(0);
         }
     }
+
     public static void remove(String filename) {
         File newfile = join(CWD,filename);
         judgefileexist(newfile);
+        Blob blob = new Blob(newfile);
         if(Readaddstage().getHashmap().containsKey(newfile.getPath())){
-            remove_addstage_file(Readaddstage(),newfile);
+            Readaddstage().removeblob(blob);
         }
-        else{
-
+        else if(judgeremove(newfile)){//如果最新的commit中存在这个文件则进入else-if 否则进入else输出错误信息
+            currentcommit.getblobhashmap().containsKey(blob.getRefs());
+            restrictedDelete(newfile);
+        }
+        else {
+            System.out.println("No reason to remove the file.");
+            exit(0);
         }
     }
-    public static void remove_addstage_file(Stage addstage,File file){
-        addstage.getHashmap().remove(file.getName());
+
+    public static boolean judgeremove(File file){  //创建一个blob，然后读取hashcode，然后查找currentcommit的map中有无这个blob，有的话则为真
+        Blob blob = new Blob(file);
+        return currentcommit.getblobhashmap().containsKey(blob.getRefs())&&currentcommit.getblobhashmap().containsValue(blob.getItshashcode());
+
+    }
+    public static void remove_addstage_file(Stage addstage,File file){  //通过移除路径来移除文件
+        addstage.getHashmap().remove(file.getPath());
         addstage.savefile();
     }
 
@@ -202,7 +225,7 @@ public class Repository {
         File removestage =join(STAGE_DIR,"removestage");
         return readObject(removestage, Stage.class);
     }
-    //判断这个文件是否已经存在是否要加入
+    //判断这个文件是否已经存在是否要加入               hashcode和地址 如果有一个不一样则判断为真 即为加入
     public static boolean judgeadd(Stage stage,Blob blob){
         if(!(stage.getHashmap().containsValue(blob.getItshashcode())&&stage.getHashmap().containsKey(blob.getRefs()))){
             return true;

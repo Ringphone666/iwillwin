@@ -23,6 +23,7 @@ public class Main {
                 break;
             // TODO: FILL THE REST IN
             case "rm":
+                Repository.remove(args[1]);
                 //
                 break;
             case "commit":
