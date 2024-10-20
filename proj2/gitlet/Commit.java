@@ -71,6 +71,10 @@ public class Commit implements Serializable {
         return message;
     }
 
+    public List<String> getparent(){
+        return this.parenthashcode;
+    }
+
     public String getParenthashcode(){
         return parenthashcode.get(0);
     }

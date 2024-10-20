@@ -2,6 +2,7 @@ package gitlet;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import static gitlet.Utils.*;
@@ -226,13 +227,40 @@ public class Repository {
 
     public static void log(){
         Commit nowcommit = ReadHead();
-        while (!nowcommit.getParenthashcode().isEmpty()){
+        while (!nowcommit.getparent().isEmpty()){
             print(nowcommit);
-            File a_Commit = join(COMMIT_DIR, nowcommit.getItshashcode());
+            File a_Commit = join(COMMIT_DIR, nowcommit.getParenthashcode());
             nowcommit =  readObject(a_Commit, Commit.class);
         }
         print(nowcommit);
     }
+
+    public static void globle_log(){
+        List<String> commitfilename = Utils.plainFilenamesIn(COMMIT_DIR);
+        for(String name:commitfilename){
+            File a_Commit = join(COMMIT_DIR,name);
+            Commit  readcommit =  readObject(a_Commit, Commit.class);
+            print(readcommit);
+        }
+    }
+
+    public static void find(String message){
+        List<String> commitfilename = Utils.plainFilenamesIn(COMMIT_DIR);
+        boolean flag = false;
+        for(String name:commitfilename){
+            File a_Commit = join(COMMIT_DIR,name);
+            Commit  readcommit =  readObject(a_Commit, Commit.class);
+            if (readcommit.getMessage()==message){
+                System.out.println(readcommit.getItshashcode());
+                flag = true;
+            }
+        }
+        if(!flag){
+            System.out.println("Found no commit with that message.");
+            exit(0);
+        }
+    }
+    
     public static void print (Commit commit){
         System.out.println("===");
         System.out.println("commit " + commit.getItshashcode());
@@ -245,11 +273,13 @@ public class Repository {
         System.out.println(commit.getMessage());
         System.out.println();
     }
+
     public static boolean judgeremove(File file){  //创建一个blob，然后读取hashcode，然后查找currentcommit的map中有无这个blob，有的话则为真
         Blob blob = new Blob(file);
         currentcommit = ReadHead();
         return currentcommit.getblobhashmap().containsKey(blob.getRefs());
     }
+
     public static void remove_addstage_file(Stage addstage,File file){  //通过移除路径来移除文件
         addstage.getHashmap().remove(file.getPath());
         addstage.savefile();
@@ -263,6 +293,7 @@ public class Repository {
         File removestage =join(STAGE_DIR,"removestage");
         return readObject(removestage, Stage.class);
     }
+
     //判断这个文件是否已经存在是否要加入               hashcode和地址 如果有一个不一样则判断为真 即为加入
     public static boolean judgeadd(Stage stage,Blob blob){
         if(!(stage.getHashmap().containsValue(blob.getItshashcode())&&stage.getHashmap().containsKey(blob.getRefs()))){

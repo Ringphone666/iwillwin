@@ -28,8 +28,15 @@ public class Main {
                 break;
             case "commit":
                 Repository.commit(args[1]);
+                break;
             case "log":
-                //Repository.log();
+                Repository.log();
+                break;
+            case "global-log" :
+                Repository.globle_log();
+                break;
+            case "find":
+
         }
     }
 }
