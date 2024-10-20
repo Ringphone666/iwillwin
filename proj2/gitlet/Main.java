@@ -36,7 +36,8 @@ public class Main {
                 Repository.globle_log();
                 break;
             case "find":
-
+                Repository.find(args[1]);
+                break;
         }
     }
 }
