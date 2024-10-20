@@ -76,6 +76,7 @@ public class Commit implements Serializable {
     }
 
     public void savefile(){
+        getItshashcode();
         File commit = join (getCommitDir(),itshashcode);
         createnewFile(commit);
         writeObject(commit,this);
@@ -83,6 +84,20 @@ public class Commit implements Serializable {
 
     public Map<String, String> getblobhashmap(){
         return blobhashmap;
+    }
+
+    public void putkey(Map<String,String> map){
+        blobhashmap.putAll(map);
+    }
+
+    public void removekey(Map<String,String> map){
+        Iterator<String> iterator = blobhashmap.keySet().iterator();
+        while (iterator.hasNext()) {
+            String key = iterator.next();
+            if (map.containsKey(key)) {
+                iterator.remove(); // 使用迭代器的 remove 方法安全地移除元素
+            }
+        }
     }
 
     /* TODO: fill in the rest of this class. */

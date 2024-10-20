@@ -2,6 +2,7 @@ package gitlet;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 import static gitlet.Utils.*;
 
@@ -137,14 +138,12 @@ public class Repository {
         Blob newblow = new Blob(newfile);
         Stage addstage = Readaddstage();
         if (Readremovestage().getHashmap().containsKey(newblow.getRefs())){
-            Readremovestage().removeblob(newblow);
+            Readremovestage().removeblob(newblow.getRefs());
         }
         else if (judgeadd(addstage,newblow)) {
             newblow.savefile();
             addstage.addBlob(newblow);
         }
-
-
     }
     public static void commit (String message){
         judgestage();
@@ -153,7 +152,9 @@ public class Repository {
         addblob_to_commit(a_newcommit);
         removeblob_to_commit(a_newcommit);//暂未debug
         a_newcommit.savefile();
+        System.out.println("a_newcommit's hashcode:"+a_newcommit.getItshashcode());
         currentcommit = a_newcommit;
+        System.out.println("currentcommit's hashcode:"+currentcommit.getItshashcode());
         SetHEAD();
         //设置分支？？暂定;
         clearstage();
@@ -162,19 +163,19 @@ public class Repository {
             File headCommit = join(COMMIT_DIR, readContentsAsString(HEAD_DIR));
             return readObject(headCommit, Commit.class);
     }
+
     public static void clearstage(){
-        Readremovestage().getHashmap().clear();
-        Readremovestage().savefile();
-        Readaddstage().getHashmap().clear();
-        Readaddstage().savefile();
+        Readaddstage().clear();
+        Readremovestage().clear();
+        System.out.println("hi i am clear");
     }
 
     public static void addblob_to_commit (Commit commit){
-        commit.getblobhashmap().putAll(Readaddstage().getHashmap());
+        commit.putkey(Readaddstage().getHashmap());
     }
 
     public static void removeblob_to_commit (Commit commit){
-        commit.getblobhashmap().entrySet().removeAll(Readremovestage().getHashmap().keySet());
+        commit.removekey(Readremovestage().getHashmap());
     }
 
     public static void judgestage(){
@@ -191,15 +192,31 @@ public class Repository {
     }
 
     public static void remove(String filename) {
-        File newfile = join(CWD,filename);
-        judgefileexist(newfile);
+        Map<String, String> addBlobs = Readaddstage().getHashmap();
+        File newfile = join(CWD, filename);
+        String filePath = newfile.getPath();
         Blob blob = new Blob(newfile);
-        if(Readaddstage().getHashmap().containsKey(newfile.getPath())){
-            Readaddstage().removeblob(blob);
+//       // File newfile = join(CWD,filename);
+//        // judgefileexist(newfile);
+//        Blob blob = new Blob(newfile);
+//        if(Readaddstage().getHashmap().containsKey(newfile.getPath())){             ////////////////?????为什么会进入这个分支？？
+//            Readaddstage().removeblob(blob);
+//            System.out.println("I am in here");
+//        }
+        if (addBlobs.containsKey(filePath)) {
+            //Readaddstage().removeBlob(filePath);
+
+//            Readaddstage().getHashmap().remove(filePath); ylf别天天惦记你那私人gethashmap哈
+            Readaddstage().removeblob(filePath);
+            Readaddstage().savefile();
+            System.out.println("I am in this");
         }
         else if(judgeremove(newfile)){//如果最新的commit中存在这个文件则进入else-if 否则进入else输出错误信息
-            currentcommit.getblobhashmap().containsKey(blob.getRefs());
-            restrictedDelete(newfile);
+             currentcommit = ReadHead(); //先注释，我猜测我是想读文件然后判断是否有这个玩意，但是显然judge remove现在没有传入currentcommit这是不正确的
+//            currentcommit.getblobhashmap().containsKey(blob.getRefs());        //？？看不懂自己想表达什么了
+            Readremovestage().addBlob(filePath,currentcommit.getblobhashmap().get(filePath));
+            restrictedDelete(newfile);   ///////////////////!!!!!!!!这部分有bug尚未解决，存在无法rm后没有发现change
+            System.out.println("hihihi");
         }
         else {
             System.out.println("No reason to remove the file.");
@@ -207,10 +224,31 @@ public class Repository {
         }
     }
 
+    public static void log(){
+        Commit nowcommit = ReadHead();
+        while (!nowcommit.getParenthashcode().isEmpty()){
+            print(nowcommit);
+            File a_Commit = join(COMMIT_DIR, nowcommit.getItshashcode());
+            nowcommit =  readObject(a_Commit, Commit.class);
+        }
+        print(nowcommit);
+    }
+    public static void print (Commit commit){
+        System.out.println("===");
+        System.out.println("commit " + commit.getItshashcode());
+//        if (parents.size() > 1) {
+//            String print = "Merge: " + parents.get(0).substring(0, 7)
+//                    + " " + parents.get(1).substring(0, 7);
+//            System.out.println(print);
+//        }               尚未实现
+        System.out.println("Date: " + commit.getTimestamp());
+        System.out.println(commit.getMessage());
+        System.out.println();
+    }
     public static boolean judgeremove(File file){  //创建一个blob，然后读取hashcode，然后查找currentcommit的map中有无这个blob，有的话则为真
         Blob blob = new Blob(file);
-        return currentcommit.getblobhashmap().containsKey(blob.getRefs())&&currentcommit.getblobhashmap().containsValue(blob.getItshashcode());
-
+        currentcommit = ReadHead();
+        return currentcommit.getblobhashmap().containsKey(blob.getRefs());
     }
     public static void remove_addstage_file(Stage addstage,File file){  //通过移除路径来移除文件
         addstage.getHashmap().remove(file.getPath());

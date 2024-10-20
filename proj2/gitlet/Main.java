@@ -28,6 +28,8 @@ public class Main {
                 break;
             case "commit":
                 Repository.commit(args[1]);
+            case "log":
+                //Repository.log();
         }
     }
 }

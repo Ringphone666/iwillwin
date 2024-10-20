@@ -23,9 +23,18 @@ public class Stage implements Serializable {
         hashmap.put(blob.getRefs(), blob.getItshashcode());
         savefile();
     }
+    public void addBlob(String refs,String hashcode){
+        hashmap.put(refs, hashcode);
+        savefile();
+    }
 
     public void removeblob(Blob blob){
         hashmap.remove(blob.getRefs(),blob.getItshashcode());
+        savefile();
+    }
+
+    public void removeblob(String ref){
+        hashmap.remove(ref);
         savefile();
     }
 
@@ -39,5 +48,9 @@ public class Stage implements Serializable {
         return hashmap;
     }
 
+    public void clear (){
+        hashmap.clear();        //妈的蠢猪 你妈怎么会想到getHashmap然后clear，在那debug大半天
+        savefile();
+    }
 
 }
