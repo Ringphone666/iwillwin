@@ -250,7 +250,7 @@ public class Repository {
         for(String name:commitfilename){
             File a_Commit = join(COMMIT_DIR,name);
             Commit  readcommit =  readObject(a_Commit, Commit.class);
-            if (readcommit.getMessage()==message){
+            if (readcommit.getMessage().equals(message)){
                 System.out.println(readcommit.getItshashcode());
                 flag = true;
             }
@@ -269,6 +269,10 @@ public class Repository {
 //                    + " " + parents.get(1).substring(0, 7);
 //            System.out.println(print);
 //        }               尚未实现
+        if (commit.getparent().size()>1){
+            String print = "Merge: " + commit.getparent().get(0).substring(0,7) + " " + commit.getparent().get(1).substring(0,7);
+            System.out.println(print);
+        }
         System.out.println("Date: " + commit.getTimestamp());
         System.out.println(commit.getMessage());
         System.out.println();
