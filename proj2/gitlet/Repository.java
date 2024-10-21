@@ -153,9 +153,7 @@ public class Repository {
         addblob_to_commit(a_newcommit);
         removeblob_to_commit(a_newcommit);//暂未debug
         a_newcommit.savefile();
-        System.out.println("a_newcommit's hashcode:"+a_newcommit.getItshashcode());
         currentcommit = a_newcommit;
-        System.out.println("currentcommit's hashcode:"+currentcommit.getItshashcode());
         SetHEAD();
         //设置分支？？暂定;
         clearstage();
@@ -168,7 +166,6 @@ public class Repository {
     public static void clearstage(){
         Readaddstage().clear();
         Readremovestage().clear();
-        System.out.println("hi i am clear");
     }
 
     public static void addblob_to_commit (Commit commit){
@@ -210,14 +207,12 @@ public class Repository {
 //            Readaddstage().getHashmap().remove(filePath); ylf别天天惦记你那私人gethashmap哈
             Readaddstage().removeblob(filePath);
             Readaddstage().savefile();
-            System.out.println("I am in this");
         }
         else if(judgeremove(newfile)){//如果最新的commit中存在这个文件则进入else-if 否则进入else输出错误信息
              currentcommit = ReadHead(); //先注释，我猜测我是想读文件然后判断是否有这个玩意，但是显然judge remove现在没有传入currentcommit这是不正确的
 //            currentcommit.getblobhashmap().containsKey(blob.getRefs());        //？？看不懂自己想表达什么了
             Readremovestage().addBlob(filePath,currentcommit.getblobhashmap().get(filePath));
             restrictedDelete(newfile);   ///////////////////!!!!!!!!这部分有bug尚未解决，存在无法rm后没有发现change
-            System.out.println("hihihi");
         }
         else {
             System.out.println("No reason to remove the file.");
