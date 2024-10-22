@@ -260,15 +260,17 @@ public class Repository {
         }
     }
 
+
     public static void status (){
         List<String> branches = Utils.plainFilenamesIn(BRANCH_DIR);
+        System.out.println("=== Branches ===");
         for (String name : branches){
             File readbranch = join(BRANCH_DIR , name);
             Branch a_branch = readObject(readbranch, Branch.class);
-            System.out.println("=== Branches ===");
             if(a_branch.getBranchname().equals(Readbranchname())){
                 System.out.print("*");
             }
+
             System.out.println(a_branch.getBranchname());
         }
         System.out.println("\n=== Staged Files ===");
@@ -278,6 +280,30 @@ public class Repository {
         System.out.println("\n=== Modifications Not Staged For Commit ===");
         System.out.println("\n=== Untracked Files ===");
         System.out.println("\n");
+    }
+    public static void branch (String branchname){
+        List<String> branches = Utils.plainFilenamesIn(BRANCH_DIR);
+        if(branches.contains(branchname)){
+            System.out.println("A branch with that name already exists.");
+            System.exit(0);
+        }
+        Branch newbranch = new Branch(ReadHead(),branchname);
+        newbranch.savefile();
+    }
+
+    public static void rm_branch (String branchname){
+        List<String> branches = Utils.plainFilenamesIn(BRANCH_DIR);
+        if(!branches.contains(branchname)){
+            System.out.println("A branch with that name does not exist.");
+            System.exit(0);
+        }
+        if(branchname.equals(Readbranchname())){
+            System.out.println("Cannot remove the current branch.");
+            exit(0);
+        }
+        File deletebranch = join(BRANCH_DIR,branchname);
+        deletebranch.delete();
+
     }
     public static void print (Commit commit){
         System.out.println("===");

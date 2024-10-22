@@ -37,6 +37,12 @@ public class Main {
             case "status":
                 Repository.status();
                 break;
+            case "branch":
+                Repository.branch(args[1]);
+                break;
+            case "rm-branch":
+                Repository.rm_branch(args[1]);
+
         }
     }
 }
