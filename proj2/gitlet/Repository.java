@@ -275,6 +275,7 @@ public class Repository {
         Readaddstage().print();
         System.out.println("\n=== Removed Files ===");
         Readremovestage().print();
+        System.out.println("");
     }
     public static void print (Commit commit){
         System.out.println("===");
