@@ -163,6 +163,10 @@ public class Repository {
             return readObject(headCommit, Commit.class);
     }
 
+    public static String Readbranchname(){
+        return readContentsAsString(NOWBRANCH_DIR);
+    }
+
     public static void clearstage(){
         Readaddstage().clear();
         Readremovestage().clear();
@@ -255,7 +259,18 @@ public class Repository {
             exit(0);
         }
     }
-    
+
+    public static void status (){
+        List<String> branches = Utils.plainFilenamesIn(BRANCH_DIR);
+        for (String name : branches){
+            File readbranch = join(BRANCH_DIR , name);
+            Branch a_branch = readObject(readbranch, Branch.class);
+            if(a_branch.getBranchname().equals(Readbranchname())){
+                System.out.print("*");
+            }
+            System.out.println(a_branch.getBranchname());
+        }
+    }
     public static void print (Commit commit){
         System.out.println("===");
         System.out.println("commit " + commit.getItshashcode());

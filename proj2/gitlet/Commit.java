@@ -39,7 +39,7 @@ public class Commit implements Serializable {
     private Map <String,String> blobhashmap;
 
     public Commit(){
-        this.message = "have initcommit";
+        this.message = "initial commit";
         date = new Date(0);
         parenthashcode = new ArrayList<>();
         blobhashmap = new TreeMap<>();

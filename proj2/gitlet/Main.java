@@ -15,16 +15,12 @@ public class Main {
         switch(firstArg) {
             case "init":
                 Repository.init();
-                // TODO: handle the `init` command
                 break;
             case "add":
                 Repository.add(args[1]);
-                // TODO: handle the `add [filename]` command
                 break;
-            // TODO: FILL THE REST IN
             case "rm":
                 Repository.remove(args[1]);
-                //
                 break;
             case "commit":
                 Repository.commit(args[1]);

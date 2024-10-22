@@ -28,4 +28,8 @@ public class Branch implements Serializable {
     public String getCommitpointer() {
         return commitpointer;
     }
+
+    public String getBranchname(){
+        return Branchname;
+    }
 }
