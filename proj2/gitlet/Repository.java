@@ -275,7 +275,9 @@ public class Repository {
         Readaddstage().print();
         System.out.println("\n=== Removed Files ===");
         Readremovestage().print();
-        System.out.println("");
+        System.out.println("\n=== Modifications Not Staged For Commit ===");
+        System.out.println("\n=== Untracked Files ===");
+        System.out.println("\n");
     }
     public static void print (Commit commit){
         System.out.println("===");
