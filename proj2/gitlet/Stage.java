@@ -3,6 +3,7 @@ package gitlet;
 import java.io.File;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -52,5 +53,14 @@ public class Stage implements Serializable {
         hashmap.clear();        //妈的蠢猪 你妈怎么会想到getHashmap然后clear，在那debug大半天
         savefile();
     }
+
+    public void print(){
+        for (String filePath: hashmap.keySet())
+        {
+            File file = new File(filePath);
+            System.out.println(file.getName());
+        }
+    }
+
 
 }

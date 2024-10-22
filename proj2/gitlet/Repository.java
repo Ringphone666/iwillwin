@@ -265,11 +265,16 @@ public class Repository {
         for (String name : branches){
             File readbranch = join(BRANCH_DIR , name);
             Branch a_branch = readObject(readbranch, Branch.class);
+            System.out.println("=== Branches ===");
             if(a_branch.getBranchname().equals(Readbranchname())){
                 System.out.print("*");
             }
             System.out.println(a_branch.getBranchname());
         }
+        System.out.println("\n=== Staged Files ===");
+        Readaddstage().print();
+        System.out.println("\n=== Removed Files ===");
+        Readremovestage().print();
     }
     public static void print (Commit commit){
         System.out.println("===");
