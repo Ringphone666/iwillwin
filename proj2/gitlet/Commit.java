@@ -104,5 +104,4 @@ public class Commit implements Serializable {
         }
     }
 
-    /* TODO: fill in the rest of this class. */
 }

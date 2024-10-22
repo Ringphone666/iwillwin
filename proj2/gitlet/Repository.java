@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import static gitlet.Utils.*;
-
 import static java.lang.System.exit;
 
 // TODO: any imports you need here
@@ -58,6 +57,7 @@ public class Repository {
     private static File STAGE_DIR = join (GITLET_DIR,"stage");
     private static File NOWBRANCH_DIR = join(GITLET_DIR,"BRANCH");
     private static Commit currentcommit;
+    private static final int UID_length = 40 ;
     /* TODO: fill in the rest of this class. */
 
     public static File getCommitDir(){
@@ -155,6 +155,7 @@ public class Repository {
         a_newcommit.savefile();
         currentcommit = a_newcommit;
         SetHEAD();
+        setbranch();
         //设置分支？？暂定;
         clearstage();
     }
@@ -281,6 +282,12 @@ public class Repository {
         System.out.println("\n=== Untracked Files ===");
         System.out.println("\n");
     }
+
+    public static void setbranch(){
+        Branch branch = new Branch(currentcommit,Readbranchname());
+        branch.savefile();
+    }
+
     public static void branch (String branchname){
         List<String> branches = Utils.plainFilenamesIn(BRANCH_DIR);
         if(branches.contains(branchname)){
@@ -320,6 +327,96 @@ public class Repository {
         System.out.println("Date: " + commit.getTimestamp());
         System.out.println(commit.getMessage());
         System.out.println();
+    }
+
+    public static void checkoutBranch(String branchname){
+        List<String> branches = Utils.plainFilenamesIn(BRANCH_DIR);
+        if(!branches.contains(branchname)){
+            System.out.println("No such branch exists.");
+            exit(0);
+        }
+        if(branchname.equals(Readbranchname())){
+            System.out.println("No need to checkout the current branch.");
+        }
+        Commit oldcommit = ReadHead();
+        File checkoutbranch = join(BRANCH_DIR,branchname);
+        Branch branch = readObject(checkoutbranch, Branch.class);
+        File commitfile = join (COMMIT_DIR,branch.getCommitpointer());
+        Commit newcommit = readObject(commitfile , Commit.class );
+
+        createnewFile(NOWBRANCH_DIR);
+        writeContents(NOWBRANCH_DIR,branchname);
+    }
+
+    //某个文件老的没有且新的有则报错
+    public static void branchcheckouthelper(Commit newcommit,Commit oldcommit){
+        Map<String,String> oldmap = oldcommit.getblobhashmap();
+        Map<String,String> newmap = newcommit.getblobhashmap();
+        for (String filepath : newmap.keySet()){
+            File file = new File(filepath);
+            if (!oldmap.containsKey(filepath)){
+                if (file.exists()) {
+                    System.out.println("There is an untracked file in the way; "
+                            + "delete it, or add and commit it first.");
+                    System.exit(0);
+                }
+            }
+        }
+
+
+    }
+
+    //首先先得到所有的blob的相对路径，然后join（cwd，filename）
+    public static void checkoutHeadFile(String filename){
+        Commit commit = ReadHead();
+        checkouthelper(commit,filename);
+    }
+
+    public static void checkouthelper(Commit commit,String filename){
+        File file = join(CWD,filename);
+        String filepath = file.getPath();
+        if(!commit.getblobhashmap().containsKey(filepath)){
+            System.out.println("File does not exist in that commit.");
+            exit(0);
+        }
+        String blobhashcode = commit.getblobhashmap().get(filepath);
+        File readblob = join(BLOB_DIR,blobhashcode);
+        Blob blob = readObject(readblob, Blob.class);
+        byte[] contents = blob.getContent();
+        if (file.exists()) {
+            file.delete();
+        }
+        createnewFile(file);
+        writeContents(file, contents);
+    }
+
+    public static void checkoutCommitFile(String commithashcode,String filename){
+        File recovercommit ;
+        if (commithashcode.length()<UID_length){
+            recovercommit = shortID(commithashcode);
+        }
+        else
+        {
+            recovercommit = join (COMMIT_DIR,commithashcode);
+        }
+        if(!recovercommit.exists()){
+            System.out.println("No commit with that id exists.");
+            exit(0);
+        }
+        Commit commit = readObject(recovercommit, Commit.class);
+        checkouthelper(commit,filename);
+    }
+
+    public static File shortID(String id){
+        List<String> commits = Utils.plainFilenamesIn(COMMIT_DIR);
+        int length = id.length();
+        for(String commitid : commits){
+            if(commitid.substring(0,length).equals(id))
+            {
+                return join(COMMIT_DIR,commitid);
+            }
+        }
+        return null;
     }
 
     public static boolean judgeremove(File file){  //创建一个blob，然后读取hashcode，然后查找currentcommit的map中有无这个blob，有的话则为真

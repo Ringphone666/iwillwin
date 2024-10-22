@@ -31,7 +31,7 @@ public class Blob implements Serializable {
     }
 
     public void savefile(){
-        File blob = join(getBlobDir(),itshashcode);
+        File blob = join(getBlobDir(),itshashcode); //后面的参数相当于名字;
         createnewFile(blob);
         writeObject(blob,this);
     }

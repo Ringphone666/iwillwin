@@ -25,7 +25,7 @@ public class Stage implements Serializable {
         savefile();
     }
     public void addBlob(String refs,String hashcode){
-        hashmap.put(refs, hashcode);
+        hashmap.put(refs, hashcode);                        //地址，hashcode
         savefile();
     }
 

@@ -1,5 +1,7 @@
 package gitlet;
 
+import java.util.Objects;
+
 /** Driver class for Gitlet, a subset of the Git version-control system.
  *  @author TODO
  */
@@ -42,7 +44,31 @@ public class Main {
                 break;
             case "rm-branch":
                 Repository.rm_branch(args[1]);
+            case "checkout":
+                checkout(args);
+        }
+    }
 
+    public static void checkout(String[] args){
+        if (args.length == 3) {
+            if (Objects.equals(args[1], "--")) {
+                Repository.checkoutHeadFile(args[2]);
+            } else {
+                System.out.println("Incorrect operands.");
+                System.exit(0);
+            }
+        } else if (args.length == 4) {
+            if (Objects.equals(args[2], "--")) {
+                Repository.checkoutCommitFile(args[1], args[3]);
+            } else {
+                System.out.println("Incorrect operands.");
+                System.exit(0);
+            }
+        } else if (args.length == 2) {
+            Repository.checkoutBranch(args[1]);
+        } else {
+            System.out.println("Incorrect operands.");
+            System.exit(0);
         }
     }
 }
