@@ -44,8 +44,13 @@ public class Main {
                 break;
             case "rm-branch":
                 Repository.rm_branch(args[1]);
+                break;
             case "checkout":
                 checkout(args);
+                break;
+            case "reset":
+                Repository.reset(args[1]);
+                break;
         }
     }
 
