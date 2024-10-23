@@ -343,7 +343,7 @@ public class Repository {
         Branch branch = readObject(checkoutbranch, Branch.class);
         File commitfile = join (COMMIT_DIR,branch.getCommitpointer());
         Commit newcommit = readObject(commitfile , Commit.class );
-
+        branchcheckouthelper(newcommit,oldcommit);
         createnewFile(NOWBRANCH_DIR);
         writeContents(NOWBRANCH_DIR,branchname);
     }
@@ -362,10 +362,34 @@ public class Repository {
                 }
             }
         }
-
-
+        // ① newmap和oldmap都有这个路径，则检查hashcode是否相同 若相同则continue，否则将这个文件替换（类似前面两类的操作）
+        // ② newmap没有这个路径，但oldmap有，则delete 这个文件
+        // ③ newmap有且oldmap没有且文件不存在，则直接创建.  //但是我没有filename？？
+        for (String filepath : newmap.keySet()){
+            File file =new File (filepath);
+            createfilehelper(newcommit,file);
+        }
+        for (String filePath: oldmap.keySet()) {
+            if (!newmap.containsKey(filePath)) {
+                File deleteFile = new File(filePath);
+                deleteFile.delete();
+            }
+        }
     }
 
+    public static void createfilehelper(Commit newcommit , File file){
+        String filepath = file.getPath();
+        String filename = file.getName();
+        String blobhashcode = newcommit.getblobhashmap().get(filepath);
+        File readblob = join(BLOB_DIR,blobhashcode);
+        Blob blob = readObject(readblob, Blob.class);
+        byte [] contents = blob.getContent();
+        if (file.exists()) {
+            file.delete();
+        }
+        createnewFile(file);
+        writeContents(file, contents);
+    }
     //首先先得到所有的blob的相对路径，然后join（cwd，filename）
     public static void checkoutHeadFile(String filename){
         Commit commit = ReadHead();
