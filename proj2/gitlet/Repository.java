@@ -8,7 +8,6 @@ import java.util.Map;
 import static gitlet.Utils.*;
 import static java.lang.System.exit;
 
-// TODO: any imports you need here
 /** Represents a gitlet repository.
  *  The repository structure:
  *  .gitlet/
@@ -29,14 +28,13 @@ import static java.lang.System.exit;
  *  对应进行创建文件然后保存
  */
 /** Represents a gitlet repository.
- *  TODO: It's a good idea to give a description here of what else this Class
  *  does at a high level.
  *
- *  @author TODO
+ *  @author Ringphone
  */
 public class Repository {
     /**
-     * TODO: add instance variables here.
+     *
      *
      * List all instance variables of the Repository class here with a useful
      * comment above them describing what that variable represents and how that
@@ -52,18 +50,18 @@ public class Repository {
     private static File OBJECT_DIR = join(GITLET_DIR, "objects");
     private static File COMMIT_DIR = join(OBJECT_DIR, "commits");
     private static File BLOB_DIR = join(OBJECT_DIR, "blobs");
-    private static File HEAD_DIR = join (GITLET_DIR,"HEAD");
-    private static File BRANCH_DIR = join (GITLET_DIR,"branches");
-    private static File STAGE_DIR = join (GITLET_DIR,"stage");
-    private static File NOWBRANCH_DIR = join(GITLET_DIR,"BRANCH");
+    private static File HEAD_DIR = join(GITLET_DIR, "HEAD");
+    private static File BRANCH_DIR = join(GITLET_DIR, "branches");
+    private static File STAGE_DIR = join(GITLET_DIR, "stage");
+    private static File NOWBRANCH_DIR = join(GITLET_DIR, "BRANCH");
     private static Commit currentcommit;
-    private static final int UID_length = 40 ;
-    /* TODO: fill in the rest of this class. */
+    private static final int UID_length = 40;
 
-    public static File getCommitDir(){
+    public static File getCommitDir() {
         return COMMIT_DIR;
     }
-    public static File getBranchDir(){return BRANCH_DIR;}
+
+    public static File getBranchDir() {return BRANCH_DIR;}
 
     public static File getBlobDir() {
         return BLOB_DIR;
@@ -73,11 +71,11 @@ public class Repository {
         return OBJECT_DIR;
     }
 
-    public static File getHeadDir(){
+    public static File getHeadDir() {
         return HEAD_DIR;
     }
 
-    public static File getStageDir(){
+    public static File getStageDir() {
         return STAGE_DIR;
     }
 
@@ -95,7 +93,7 @@ public class Repository {
         Commit initcommit = new Commit();
         initcommit.savefile();
         currentcommit = initcommit;
-        SetHEAD();
+        setHEAD();
         initMaster();
         initstage();
 //        Branch master = new Branch(currentcommit);
@@ -104,7 +102,7 @@ public class Repository {
 //        writeContents(BRANCH_DIR, "master");
 
     }
-    public static void SetHEAD() {
+    public static void setHEAD() {
         createnewFile(HEAD_DIR);
         writeContents(HEAD_DIR,currentcommit.getItshashcode());
     }
@@ -142,14 +140,14 @@ public class Repository {
     }
 
     public static void add(String filename) {
-        File newfile = join(CWD,filename);
+        File newfile = join(CWD, filename);
         judgefileexist(newfile); //判断这个文件是否存在
         Blob newblow = new Blob(newfile);
         Stage addstage = Readaddstage();
         if (Readremovestage().getHashmap().containsKey(newblow.getRefs())){
             Readremovestage().removeblob(newblow.getRefs());
         }
-        else if (judgeadd(addstage,newblow)) {
+        else if (judgeadd(addstage, newblow)) {
             newblow.savefile();
             addstage.addBlob(newblow);
         }
@@ -158,22 +156,22 @@ public class Repository {
     public static void commit (String message) {
         judgestage();
         judgemessage(message);
-        Commit a_newcommit = new Commit(message,ReadHead());
+        Commit a_newcommit = new Commit(message, readHead());
         addblob_to_commit(a_newcommit);
         removeblob_to_commit(a_newcommit);//暂未debug
         a_newcommit.savefile();
         currentcommit = a_newcommit;
-        SetHEAD();
+        setHEAD();
         setbranch();
         //设置分支？？暂定;
         clearstage();
     }
-    public static Commit ReadHead() {
+    public static Commit readHead() {
             File headCommit = join(COMMIT_DIR, readContentsAsString(HEAD_DIR));
             return readObject(headCommit, Commit.class);
     }
 
-    public static String Readbranchname(){
+    public static String Readbranchname() {
         return readContentsAsString(NOWBRANCH_DIR);
     }
 
@@ -222,7 +220,7 @@ public class Repository {
             Readaddstage().savefile();
         }
         else if(judgeremove(newfile)) {//如果最新的commit中存在这个文件则进入else-if 否则进入else输出错误信息
-             currentcommit = ReadHead(); //先注释，我猜测我是想读文件然后判断是否有这个玩意，但是显然judge remove现在没有传入currentcommit这是不正确的
+             currentcommit = readHead(); //先注释，我猜测我是想读文件然后判断是否有这个玩意，但是显然judge remove现在没有传入currentcommit这是不正确的
 //            currentcommit.getblobhashmap().containsKey(blob.getRefs());        //？？看不懂自己想表达什么了
             Readremovestage().addBlob(filePath,currentcommit.getblobhashmap().get(filePath));
             restrictedDelete(newfile);   ///////////////////!!!!!!!!这部分有bug尚未解决，存在无法rm后没有发现change
@@ -234,7 +232,7 @@ public class Repository {
     }
 
     public static void log() {
-        Commit nowcommit = ReadHead();
+        Commit nowcommit = readHead();
         while (!nowcommit.getparent().isEmpty()){
             print(nowcommit);
             File a_Commit = join(COMMIT_DIR, nowcommit.getParenthashcode());
@@ -245,8 +243,8 @@ public class Repository {
 
     public static void globle_log() {
         List<String> commitfilename = Utils.plainFilenamesIn(COMMIT_DIR);
-        for(String name:commitfilename){
-            File a_Commit = join(COMMIT_DIR,name);
+        for(String name : commitfilename){
+            File a_Commit = join(COMMIT_DIR, name);
             Commit  readcommit =  readObject(a_Commit, Commit.class);
             print(readcommit);
         }
@@ -256,9 +254,9 @@ public class Repository {
         List<String> commitfilename = Utils.plainFilenamesIn(COMMIT_DIR);
         boolean flag = false;
         for(String name:commitfilename) {
-            File a_Commit = join(COMMIT_DIR,name);
-            Commit  readcommit =  readObject(a_Commit, Commit.class);
-            if (readcommit.getMessage().equals(message)){
+            File a_Commit = join(COMMIT_DIR, name);
+            Commit readcommit = readObject(a_Commit, Commit.class);
+            if (readcommit.getMessage().equals(message)) {
                 System.out.println(readcommit.getItshashcode());
                 flag = true;
             }
@@ -302,7 +300,7 @@ public class Repository {
             System.out.println("A branch with that name already exists.");
             System.exit(0);
         }
-        Branch newbranch = new Branch(ReadHead(),branchname);
+        Branch newbranch = new Branch(readHead(), branchname);
         newbranch.savefile();
     }
 
@@ -339,34 +337,34 @@ public class Repository {
 
     public static void checkoutBranch(String branchname){
         List<String> branches = Utils.plainFilenamesIn(BRANCH_DIR);
-        if(!branches.contains(branchname)){
+        if(!branches.contains(branchname)) {
             System.out.println("No such branch exists.");
             exit(0);
         }
-        if(branchname.equals(Readbranchname())){
+        if(branchname.equals(Readbranchname())) {
             System.out.println("No need to checkout the current branch.");
         }
-        Commit oldcommit = ReadHead();
-        File checkoutbranch = join(BRANCH_DIR,branchname);
+        Commit oldcommit = readHead();
+        File checkoutbranch = join(BRANCH_DIR, branchname);
         Branch branch = readObject(checkoutbranch, Branch.class);
-        File commitfile = join (COMMIT_DIR,branch.getCommitpointer());
-        Commit newcommit = readObject(commitfile , Commit.class );
-        branchcheckouthelper(newcommit,oldcommit);
+        File commitfile = join (COMMIT_DIR, branch.getCommitpointer());
+        Commit newcommit = readObject(commitfile, Commit.class );
+        branchcheckouthelper(newcommit, oldcommit);
         currentcommit = newcommit;
         //查了个清除缓存区
         createnewFile(NOWBRANCH_DIR);
         writeContents(NOWBRANCH_DIR,branchname);
-        SetHEAD();
+        setHEAD();
         clearstage();
     }
 
     //某个文件老的没有且新的有则报错
-    public static void branchcheckouthelper(Commit newcommit,Commit oldcommit){
+    public static void branchcheckouthelper(Commit newcommit,Commit oldcommit) {
         Map<String,String> oldmap = oldcommit.getblobhashmap();
         Map<String,String> newmap = newcommit.getblobhashmap();
-        for (String filepath : newmap.keySet()){
+        for (String filepath : newmap.keySet()) {
             File file = new File(filepath);
-            if (!oldmap.containsKey(filepath)){
+            if (!oldmap.containsKey(filepath)) {
                 if (file.exists()) {
                     System.out.println("There is an untracked file in the way; "
                             + "delete it, or add and commit it first.");
@@ -377,9 +375,9 @@ public class Repository {
         // ① newmap和oldmap都有这个路径，则检查hashcode是否相同 若相同则continue，否则将这个文件替换（类似前面两类的操作）
         // ② newmap没有这个路径，但oldmap有，则delete 这个文件
         // ③ newmap有且oldmap没有且文件不存在，则直接创建.  //但是我没有filename？？
-        for (String filepath : newmap.keySet()){
+        for (String filepath : newmap.keySet()) {
             File file =new File (filepath);
-            createfilehelper(newcommit,file);
+            createfilehelper(newcommit, file);
         }
         for (String filePath: oldmap.keySet()) {
             if (!newmap.containsKey(filePath)) {
@@ -389,7 +387,7 @@ public class Repository {
         }
     }
 
-    public static void createfilehelper(Commit newcommit , File file){
+    public static void createfilehelper(Commit newcommit, File file) {
         String filepath = file.getPath();
         String filename = file.getName();
         String blobhashcode = newcommit.getblobhashmap().get(filepath);
@@ -403,15 +401,15 @@ public class Repository {
         writeContents(file, contents);
     }
     //首先先得到所有的blob的相对路径，然后join（cwd，filename）
-    public static void checkoutHeadFile(String filename){
-        Commit commit = ReadHead();
+    public static void checkoutHeadFile(String filename) {
+        Commit commit = readHead();
         checkouthelper(commit,filename);
     }
 
-    public static void checkouthelper(Commit commit,String filename){
+    public static void checkouthelper(Commit commit,String filename) {
         File file = join(CWD,filename);
         String filepath = file.getPath();
-        if(!commit.getblobhashmap().containsKey(filepath)){
+        if(!commit.getblobhashmap().containsKey(filepath)) {
             System.out.println("File does not exist in that commit.");
             exit(0);
         }
@@ -423,35 +421,34 @@ public class Repository {
             boolean success = restrictedDelete(file);
 
         }
-            createnewFile(file);
-            writeContents(file, contents);
+        createnewFile(file);
+        writeContents(file, contents);
     }
 
-    //你有问题;;;;;
-    public static void checkoutCommitFile(String commithashcode,String filename){
+    public static void checkoutCommitFile(String commithashcode, String filename){
         File recovercommit ;
-        if (commithashcode.length()<UID_length){
+        if (commithashcode.length()< UID_length) {
             recovercommit = shortID(commithashcode);
         }
         else
         {
-            recovercommit = join (COMMIT_DIR,commithashcode);
+            recovercommit = join(COMMIT_DIR,commithashcode);
         }
-        if(!recovercommit.exists()){
+        if(!recovercommit.exists()) {
             System.out.println("No commit with that id exists.");
             exit(0);
         }
         Commit commit = readObject(recovercommit, Commit.class);
-        checkouthelper(commit,filename);
+        checkouthelper(commit, filename);
     }
 
-    public static File shortID(String id){
+    public static File shortID(String id) {
         List<String> commits = Utils.plainFilenamesIn(COMMIT_DIR);
         int length = id.length();
         for(String commitid : commits){
             if(commitid.substring(0,length).equals(id))
             {
-                return join(COMMIT_DIR,commitid);
+                return join(COMMIT_DIR, commitid);
             }
         }
         return null;
@@ -464,10 +461,10 @@ public class Repository {
             exit(0);
         }
         Commit newcommit = readObject(resetfile, Commit.class);
-        Commit oldcommit = ReadHead();
+        Commit oldcommit = readHead();
         branchcheckouthelper(newcommit, oldcommit);
         currentcommit = newcommit;
-        SetHEAD();
+        setHEAD();
         clearstage();
         setbranch();
     }
@@ -476,21 +473,16 @@ public class Repository {
         if (!file.exists())
             return true;
         Blob blob = new Blob(file);
-        currentcommit = ReadHead();
+        currentcommit = readHead();
         return currentcommit.getblobhashmap().containsKey(blob.getRefs());
     }
 
-    public static void remove_addstage_file(Stage addstage,File file){  //通过移除路径来移除文件
-        addstage.getHashmap().remove(file.getPath());
-        addstage.savefile();
-    }
-
-        public static Stage Readaddstage (){
+        public static Stage Readaddstage () {
         File addstage =join(STAGE_DIR,"addstage");
         return readObject(addstage, Stage.class);
     }
 
-    public static Stage Readremovestage (){
+    public static Stage Readremovestage () {
         File removestage =join(STAGE_DIR,"removestage");
         return readObject(removestage, Stage.class);
     }

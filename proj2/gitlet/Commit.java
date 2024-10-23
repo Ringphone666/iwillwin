@@ -1,6 +1,5 @@
 package gitlet;
 
-// TODO: any imports you need here
 
 import java.io.File;
 import java.io.Serializable;
@@ -14,17 +13,16 @@ import static gitlet.Repository.createnewFile;
 import static gitlet.Utils.*;
 
 
-// TODO: You'll likely use this in this class
 
 /** Represents a gitlet commit object.
- *  TODO: It's a good idea to give a description here of what else this Class
+ *
  *  does at a high level.
  *
- *  @author TODO
+ *  @author Ringphone666
  */
 public class Commit implements Serializable {
     /**
-     * TODO: add instance variables here.
+     *
      *
      * List all instance variables of the Commit class here with a useful
      * comment above them describing what that variable represents and how that
@@ -38,14 +36,14 @@ public class Commit implements Serializable {
     private List<String> parenthashcode;
     private Map <String,String> blobhashmap;
 
-    public Commit(){
+    public Commit() {
         this.message = "initial commit";
         date = new Date(0);
         parenthashcode = new ArrayList<>();
         blobhashmap = new TreeMap<>();
         itshashcode = getItshashcode();
     }
-    public Commit(String message,Commit parent){
+    public Commit(String message,Commit parent) {
         this.message = message;
         date = new Date();
         parenthashcode = new ArrayList<>();
@@ -56,8 +54,9 @@ public class Commit implements Serializable {
                                           //文件名的文件替换掉。 Blob文件虽然不在addstage中，但是可以通过map得到名称和路径
     }
 
-    public String getItshashcode(){
-        this.itshashcode=sha1(message,date.toString(),parenthashcode.toString(),blobhashmap.toString());
+    public String getItshashcode() {
+        this.itshashcode=sha1(message,date.toString(),
+                parenthashcode.toString(), blobhashmap.toString());
         return itshashcode;
     }
 
@@ -67,34 +66,34 @@ public class Commit implements Serializable {
         return dateFormat.format(date);
     }
 
-    public String getMessage(){
+    public String getMessage() {
         return message;
     }
 
-    public List<String> getparent(){
+    public List<String> getparent() {
         return this.parenthashcode;
     }
 
-    public String getParenthashcode(){
+    public String getParenthashcode() {
         return parenthashcode.get(0);
     }
 
-    public void savefile(){
+    public void savefile() {
         getItshashcode();
-        File commit = join (getCommitDir(),itshashcode);
+        File commit = join (getCommitDir(), itshashcode);
         createnewFile(commit);
-        writeObject(commit,this);
+        writeObject(commit, this);
     }
 
-    public Map<String, String> getblobhashmap(){
+    public Map<String, String> getblobhashmap() {
         return blobhashmap;
     }
 
-    public void putkey(Map<String,String> map){
+    public void putkey(Map<String,String> map) {
         blobhashmap.putAll(map);
     }
 
-    public void removekey(Map<String,String> map){
+    public void removekey(Map<String,String> map) {
         Iterator<String> iterator = blobhashmap.keySet().iterator();
         while (iterator.hasNext()) {
             String key = iterator.next();

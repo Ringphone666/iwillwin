@@ -9,27 +9,27 @@ import static gitlet.Utils.writeObject;
 
 public class Branch implements Serializable {
     private String commitpointer;
-    private final String Branchname;
+    private final String branchname;
 
-    public Branch(Commit commit){
-        Branchname = "master";
+    public Branch(Commit commit) {
+        branchname = "master";
         commitpointer = commit.getItshashcode();
     }
-    public Branch (Commit commit,String name){
-        Branchname = name;
+    public Branch(Commit commit, String name) {
+        branchname = name;
         commitpointer = commit.getItshashcode();
     }
-    public void savefile(){
-        File branch = join (getBranchDir(),Branchname);
+    public void savefile() {
+        File branch = join (getBranchDir(), branchname);
         createnewFile(branch);
-        writeObject(branch,this);
+        writeObject(branch, this);
     }
 
     public String getCommitpointer() {
         return commitpointer;
     }
 
-    public String getBranchname(){
-        return Branchname;
+    public String getBranchname() {
+        return branchname;
     }
 }

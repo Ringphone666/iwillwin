@@ -18,7 +18,7 @@ public class Blob implements Serializable {
     }
 
     public Blob(File file) {
-        refs = file.getPath();;
+        refs = file.getPath();
         content = readContents(file);
         getItshashcode();
     }
