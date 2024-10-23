@@ -470,10 +470,14 @@ public class Repository {
         return readObject(removestage, Stage.class);
     }
 
-    //判断这个文件是否已经存在是否要加入               hashcode和地址 如果有一个不一样则判断为真 即为加入
+    //判断这个文件是否已经存在是否要加入              stage的 hashcode和地址 如果有一个不一样则判断为真 即为加入  ，，但是还需要考虑是否文件发生改变
     public static boolean judgeadd(Stage stage,Blob blob) {
         if(!(stage.getHashmap().containsValue(blob.getItshashcode())&&stage.getHashmap().containsKey(blob.getRefs()))){
-            return true;
+            List<String> blobs = Utils.plainFilenamesIn(BLOB_DIR);
+            if(blobs.contains(blob.getItshashcode()))  //如果blob文件夹中有这个hashcode则不加入 没有则加入
+                return false;
+            else
+                return true;
         }
         else
             return false;
