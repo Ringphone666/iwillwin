@@ -450,6 +450,21 @@ public class Repository {
         return null;
     }
 
+    public static void reset(String commithashcode) {
+        File resetfile = join(COMMIT_DIR, commithashcode);
+        Commit newcommit = readObject(resetfile, Commit.class);
+        if(!resetfile.exists()) {
+            System.out.println("No commit with that id exists.");
+            exit(0);
+        }
+        Commit oldcommit = ReadHead();
+        branchcheckouthelper(newcommit, oldcommit);
+        currentcommit = newcommit;
+        SetHEAD();
+        clearstage();
+        setbranch();
+    }
+
     public static boolean judgeremove(File file){  //创建一个blob，然后读取hashcode，然后查找currentcommit的map中有无这个blob，有的话则为真
         Blob blob = new Blob(file);
         currentcommit = ReadHead();
@@ -465,6 +480,7 @@ public class Repository {
         File addstage =join(STAGE_DIR,"addstage");
         return readObject(addstage, Stage.class);
     }
+
     public static Stage Readremovestage (){
         File removestage =join(STAGE_DIR,"removestage");
         return readObject(removestage, Stage.class);
