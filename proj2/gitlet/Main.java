@@ -19,38 +19,55 @@ public class Main {
                 Repository.init();
                 break;
             case "add":
+                Repository.checkIfTheDirectoryExist();
                 Repository.add(args[1]);
                 break;
             case "rm":
+                Repository.checkIfTheDirectoryExist();
                 Repository.remove(args[1]);
                 break;
             case "commit":
+                Repository.checkIfTheDirectoryExist();
                 Repository.commit(args[1]);
                 break;
             case "log":
+                Repository.checkIfTheDirectoryExist();
                 Repository.log();
                 break;
             case "global-log" :
+                Repository.checkIfTheDirectoryExist();
                 Repository.globle_log();
                 break;
             case "find":
+                Repository.checkIfTheDirectoryExist();
                 Repository.find(args[1]);
                 break;
             case "status":
+                Repository.checkIfTheDirectoryExist();
                 Repository.status();
                 break;
             case "branch":
+                Repository.checkIfTheDirectoryExist();
                 Repository.branch(args[1]);
                 break;
             case "rm-branch":
+                Repository.checkIfTheDirectoryExist();
                 Repository.rm_branch(args[1]);
                 break;
             case "checkout":
+                Repository.checkIfTheDirectoryExist();
                 checkout(args);
                 break;
             case "reset":
+                Repository.checkIfTheDirectoryExist();
                 Repository.reset(args[1]);
                 break;
+            case "merge":
+                Repository.checkIfTheDirectoryExist();
+                break;
+            default:
+                System.out.println("No command with that name exists.");
+                System.exit(0);
         }
     }
 

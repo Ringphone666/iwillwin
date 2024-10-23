@@ -81,8 +81,8 @@ public class Repository {
         return STAGE_DIR;
     }
 
-    public static void init(){
-        if(GITLET_DIR.exists()){
+    public static void init() {
+        if(GITLET_DIR.exists()) {
             System.out.println("A Gitlet version-control system already exists in the current directory.");
             exit(0);
         }
@@ -104,19 +104,27 @@ public class Repository {
 //        writeContents(BRANCH_DIR, "master");
 
     }
-    public static void SetHEAD(){
+    public static void SetHEAD() {
         createnewFile(HEAD_DIR);
         writeContents(HEAD_DIR,currentcommit.getItshashcode());
     }
 
-    private static void initstage(){
+    private static void initstage() {
         Stage addstage = new Stage("addstage");
         Stage removestage = new Stage("removestage");
         addstage.savefile();
         removestage.savefile();
 
     }
-    static void createnewFile(File file){
+
+    public static void checkIfTheDirectoryExist() {
+        if (!GITLET_DIR.exists()) {
+            System.out.println("Not in an initialized Gitlet directory.");
+            System.exit(0);
+        }
+    }
+
+    static void createnewFile(File file) {
         if (!file.exists()) {
             try {
                 file.createNewFile();
@@ -133,7 +141,7 @@ public class Repository {
         writeContents(NOWBRANCH_DIR, "master");
     }
 
-    public static void add(String filename){
+    public static void add(String filename) {
         File newfile = join(CWD,filename);
         judgefileexist(newfile); //判断这个文件是否存在
         Blob newblow = new Blob(newfile);
@@ -147,7 +155,7 @@ public class Repository {
         }
 
     }
-    public static void commit (String message){
+    public static void commit (String message) {
         judgestage();
         judgemessage(message);
         Commit a_newcommit = new Commit(message,ReadHead());
@@ -160,7 +168,7 @@ public class Repository {
         //设置分支？？暂定;
         clearstage();
     }
-    public static Commit ReadHead(){
+    public static Commit ReadHead() {
             File headCommit = join(COMMIT_DIR, readContentsAsString(HEAD_DIR));
             return readObject(headCommit, Commit.class);
     }
@@ -169,26 +177,26 @@ public class Repository {
         return readContentsAsString(NOWBRANCH_DIR);
     }
 
-    public static void clearstage(){
+    public static void clearstage() {
         Readaddstage().clear();
         Readremovestage().clear();
     }
 
-    public static void addblob_to_commit (Commit commit){
+    public static void addblob_to_commit (Commit commit) {
         commit.putkey(Readaddstage().getHashmap());
     }
 
-    public static void removeblob_to_commit (Commit commit){
+    public static void removeblob_to_commit (Commit commit) {
         commit.removekey(Readremovestage().getHashmap());
     }
 
-    public static void judgestage(){
+    public static void judgestage() {
         if(Readaddstage().getHashmap().isEmpty()&&Readremovestage().getHashmap().isEmpty()){
             System.out.println("No changes added to the commit.");
             exit(0);
         }
     }
-    public static void judgemessage(String message){
+    public static void judgemessage(String message) {
         if (message.isEmpty()){
             System.out.println("Please enter a commit message.");
             exit(0);
@@ -213,7 +221,7 @@ public class Repository {
             Readaddstage().removeblob(filePath);
             Readaddstage().savefile();
         }
-        else if(judgeremove(newfile)){//如果最新的commit中存在这个文件则进入else-if 否则进入else输出错误信息
+        else if(judgeremove(newfile)) {//如果最新的commit中存在这个文件则进入else-if 否则进入else输出错误信息
              currentcommit = ReadHead(); //先注释，我猜测我是想读文件然后判断是否有这个玩意，但是显然judge remove现在没有传入currentcommit这是不正确的
 //            currentcommit.getblobhashmap().containsKey(blob.getRefs());        //？？看不懂自己想表达什么了
             Readremovestage().addBlob(filePath,currentcommit.getblobhashmap().get(filePath));
@@ -225,7 +233,7 @@ public class Repository {
         }
     }
 
-    public static void log(){
+    public static void log() {
         Commit nowcommit = ReadHead();
         while (!nowcommit.getparent().isEmpty()){
             print(nowcommit);
@@ -235,7 +243,7 @@ public class Repository {
         print(nowcommit);
     }
 
-    public static void globle_log(){
+    public static void globle_log() {
         List<String> commitfilename = Utils.plainFilenamesIn(COMMIT_DIR);
         for(String name:commitfilename){
             File a_Commit = join(COMMIT_DIR,name);
@@ -244,10 +252,10 @@ public class Repository {
         }
     }
 
-    public static void find(String message){
+    public static void find(String message) {
         List<String> commitfilename = Utils.plainFilenamesIn(COMMIT_DIR);
         boolean flag = false;
-        for(String name:commitfilename){
+        for(String name:commitfilename) {
             File a_Commit = join(COMMIT_DIR,name);
             Commit  readcommit =  readObject(a_Commit, Commit.class);
             if (readcommit.getMessage().equals(message)){
@@ -255,20 +263,20 @@ public class Repository {
                 flag = true;
             }
         }
-        if(!flag){
+        if(!flag) {
             System.out.println("Found no commit with that message.");
             exit(0);
         }
     }
 
 
-    public static void status (){
+    public static void status() {
         List<String> branches = Utils.plainFilenamesIn(BRANCH_DIR);
         System.out.println("=== Branches ===");
-        for (String name : branches){
+        for (String name : branches) {
             File readbranch = join(BRANCH_DIR , name);
             Branch a_branch = readObject(readbranch, Branch.class);
-            if(a_branch.getBranchname().equals(Readbranchname())){
+            if(a_branch.getBranchname().equals(Readbranchname())) {
                 System.out.print("*");
             }
 
@@ -283,14 +291,14 @@ public class Repository {
         System.out.println("\n");
     }
 
-    public static void setbranch(){
+    public static void setbranch() {
         Branch branch = new Branch(currentcommit,Readbranchname());
         branch.savefile();
     }
 
-    public static void branch (String branchname){
+    public static void branch (String branchname) {
         List<String> branches = Utils.plainFilenamesIn(BRANCH_DIR);
-        if(branches.contains(branchname)){
+        if(branches.contains(branchname)) {
             System.out.println("A branch with that name already exists.");
             System.exit(0);
         }
@@ -298,9 +306,9 @@ public class Repository {
         newbranch.savefile();
     }
 
-    public static void rm_branch (String branchname){
+    public static void rm_branch (String branchname) {
         List<String> branches = Utils.plainFilenamesIn(BRANCH_DIR);
-        if(!branches.contains(branchname)){
+        if(!branches.contains(branchname)) {
             System.out.println("A branch with that name does not exist.");
             System.exit(0);
         }
