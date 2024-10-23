@@ -145,6 +145,7 @@ public class Repository {
             newblow.savefile();
             addstage.addBlob(newblow);
         }
+
     }
     public static void commit (String message){
         judgestage();
@@ -344,6 +345,7 @@ public class Repository {
         File commitfile = join (COMMIT_DIR,branch.getCommitpointer());
         Commit newcommit = readObject(commitfile , Commit.class );
         branchcheckouthelper(newcommit,oldcommit);
+        //查了个清除缓存区
         createnewFile(NOWBRANCH_DIR);
         writeContents(NOWBRANCH_DIR,branchname);
     }
@@ -408,12 +410,14 @@ public class Repository {
         Blob blob = readObject(readblob, Blob.class);
         byte[] contents = blob.getContent();
         if (file.exists()) {
-            file.delete();
+            boolean success = restrictedDelete(file);
+
         }
-        createnewFile(file);
-        writeContents(file, contents);
+            createnewFile(file);
+            writeContents(file, contents);
     }
 
+    //你有问题;;;;;
     public static void checkoutCommitFile(String commithashcode,String filename){
         File recovercommit ;
         if (commithashcode.length()<UID_length){
@@ -464,18 +468,19 @@ public class Repository {
     }
 
     //判断这个文件是否已经存在是否要加入               hashcode和地址 如果有一个不一样则判断为真 即为加入
-    public static boolean judgeadd(Stage stage,Blob blob){
+    public static boolean judgeadd(Stage stage,Blob blob) {
         if(!(stage.getHashmap().containsValue(blob.getItshashcode())&&stage.getHashmap().containsKey(blob.getRefs()))){
             return true;
         }
         else
             return false;
     }
-    public static void judgefileexist(File file){
-        if(file.exists()){
+
+    public static void judgefileexist(File file) {
+        if(file.exists()) {
             return;
         }
-        else{
+        else {
             System.out.println("File does not exist.");
             System.exit(0);
         }
