@@ -345,9 +345,12 @@ public class Repository {
         File commitfile = join (COMMIT_DIR,branch.getCommitpointer());
         Commit newcommit = readObject(commitfile , Commit.class );
         branchcheckouthelper(newcommit,oldcommit);
+        currentcommit = newcommit;
         //查了个清除缓存区
         createnewFile(NOWBRANCH_DIR);
         writeContents(NOWBRANCH_DIR,branchname);
+        SetHEAD();
+        clearstage();
     }
 
     //某个文件老的没有且新的有则报错
