@@ -199,7 +199,6 @@ public class Repository {
         Map<String, String> addBlobs = Readaddstage().getHashmap();
         File newfile = join(CWD, filename);
         String filePath = newfile.getPath();
-        Blob blob = new Blob(newfile);
 //       // File newfile = join(CWD,filename);
 //        // judgefileexist(newfile);
 //        Blob blob = new Blob(newfile);
