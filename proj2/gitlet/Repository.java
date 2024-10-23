@@ -451,11 +451,11 @@ public class Repository {
 
     public static void reset(String commithashcode) {
         File resetfile = join(COMMIT_DIR, commithashcode);
-        Commit newcommit = readObject(resetfile, Commit.class);
         if(!resetfile.exists()) {
             System.out.println("No commit with that id exists.");
             exit(0);
         }
+        Commit newcommit = readObject(resetfile, Commit.class);
         Commit oldcommit = ReadHead();
         branchcheckouthelper(newcommit, oldcommit);
         currentcommit = newcommit;
@@ -465,6 +465,8 @@ public class Repository {
     }
 
     public static boolean judgeremove(File file){  //创建一个blob，然后读取hashcode，然后查找currentcommit的map中有无这个blob，有的话则为真
+        if (!file.exists())
+            return true;
         Blob blob = new Blob(file);
         currentcommit = ReadHead();
         return currentcommit.getblobhashmap().containsKey(blob.getRefs());
