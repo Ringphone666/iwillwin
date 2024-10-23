@@ -20,7 +20,7 @@ public class Branch implements Serializable {
         commitpointer = commit.getItshashcode();
     }
     public void savefile() {
-        File branch = join (getBranchDir(), branchname);
+        File branch = join(getBranchDir(), branchname);
         createnewFile(branch);
         writeObject(branch, this);
     }

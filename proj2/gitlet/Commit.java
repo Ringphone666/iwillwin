@@ -34,7 +34,7 @@ public class Commit implements Serializable {
     private String itshashcode;
     private Date date;
     private List<String> parenthashcode;
-    private Map <String,String> blobhashmap;
+    private Map<String, String> blobhashmap;
 
     public Commit() {
         this.message = "initial commit";
@@ -43,19 +43,19 @@ public class Commit implements Serializable {
         blobhashmap = new TreeMap<>();
         itshashcode = getItshashcode();
     }
-    public Commit(String message,Commit parent) {
+    public Commit(String message, Commit parent) {
         this.message = message;
         date = new Date();
         parenthashcode = new ArrayList<>();
         parenthashcode.add(parent.getItshashcode());
         blobhashmap = new TreeMap<>(parent.getblobhashmap());
-        itshashcode= getItshashcode();
+        itshashcode = getItshashcode();
                                            //拿到他爹的文件   那么后面commit时候利用addstage进行替换将具有相同
                                           //文件名的文件替换掉。 Blob文件虽然不在addstage中，但是可以通过map得到名称和路径
     }
 
     public String getItshashcode() {
-        this.itshashcode=sha1(message,date.toString(),
+        this.itshashcode = sha1(message, date.toString(),
                 parenthashcode.toString(), blobhashmap.toString());
         return itshashcode;
     }
@@ -80,7 +80,7 @@ public class Commit implements Serializable {
 
     public void savefile() {
         getItshashcode();
-        File commit = join (getCommitDir(), itshashcode);
+        File commit = join(getCommitDir(), itshashcode);
         createnewFile(commit);
         writeObject(commit, this);
     }
@@ -89,11 +89,11 @@ public class Commit implements Serializable {
         return blobhashmap;
     }
 
-    public void putkey(Map<String,String> map) {
+    public void putkey(Map<String, String> map) {
         blobhashmap.putAll(map);
     }
 
-    public void removekey(Map<String,String> map) {
+    public void removekey(Map<String, String> map) {
         Iterator<String> iterator = blobhashmap.keySet().iterator();
         while (iterator.hasNext()) {
             String key = iterator.next();

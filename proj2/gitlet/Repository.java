@@ -55,13 +55,15 @@ public class Repository {
     private static File STAGE_DIR = join(GITLET_DIR, "stage");
     private static File NOWBRANCH_DIR = join(GITLET_DIR, "BRANCH");
     private static Commit currentcommit;
-    private static final int UID_length = 40;
+    private static final int UID_LENGTH = 40;
 
     public static File getCommitDir() {
         return COMMIT_DIR;
     }
 
-    public static File getBranchDir() {return BRANCH_DIR;}
+    public static File getBranchDir() {
+        return BRANCH_DIR;
+    }
 
     public static File getBlobDir() {
         return BLOB_DIR;
@@ -81,7 +83,8 @@ public class Repository {
 
     public static void init() {
         if(GITLET_DIR.exists()) {
-            System.out.println("A Gitlet version-control system already exists in the current directory.");
+            System.out.println("A Gitlet version-control system " +
+                    "already exists in the current directory.");
             exit(0);
         }
         GITLET_DIR.mkdir();
@@ -104,7 +107,7 @@ public class Repository {
     }
     public static void setHEAD() {
         createnewFile(HEAD_DIR);
-        writeContents(HEAD_DIR,currentcommit.getItshashcode());
+        writeContents(HEAD_DIR, currentcommit.getItshashcode());
     }
 
     private static void initstage() {
@@ -427,7 +430,7 @@ public class Repository {
 
     public static void checkoutCommitFile(String commithashcode, String filename){
         File recovercommit ;
-        if (commithashcode.length()< UID_length) {
+        if (commithashcode.length()< UID_LENGTH) {
             recovercommit = shortID(commithashcode);
         }
         else
